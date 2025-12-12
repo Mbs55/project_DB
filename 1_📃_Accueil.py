@@ -24,7 +24,7 @@ st.markdown(
         background-size: cover;
         background-repeat: no-repeat;
         background-attachment: fixed;
-        height: 100%;
+        height: 90%;
         
     }
     [data-test-script-state="initial"]{
