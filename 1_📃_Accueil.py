@@ -45,11 +45,13 @@ st.markdown(
     h3{
     font-size:20px
     }
+    p{
+    color:white;}
     </style>
     """,
     unsafe_allow_html=True
 )
-st.title("Hotel Luxury Paris\n\n\n\n\n")
+st.title("Hotel Luxury\n\n\n\n\n")
 #st.write("caracteristique Principale:")
 st.title("Les caractéristiques de notre hôtel")
 
@@ -88,6 +90,6 @@ with email:
     st.subheader("hoteLuxury@gmail.com")
 
 
-
+st.caption("NOM et PRENOMS: **********************")
 
 
