@@ -49,6 +49,15 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+#sidebar with option menu#
+with st.sidebar:
+    selected=option_menu(
+        menu_title="Accueil",
+        options=["Acceuil","Services","Contact"],
+        icons=["house","tools","envolope"],
+        menu_icone="cast",
+        default_index=0
+    )
 st.title("Hotel Luxury\n\n\n\n\n")
 #st.write("caracteristique Principale:")
 st.title("Les caractéristiques de notre hôtel")
