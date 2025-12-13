@@ -55,7 +55,7 @@ with st.sidebar:
         menu_title="Accueil",
         options=["Acceuil","Services","Contact"],
         icons=["house","tools","envolope"],
-        menu_icone="cast",
+        menu_icon="cast",
         default_index=0
     )
 st.title("Hotel Luxury\n\n\n\n\n")
