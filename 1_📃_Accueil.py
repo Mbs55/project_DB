@@ -12,10 +12,10 @@ st.markdown(
     background-color:rgba(255,255,255,0);
     
     }
-    #hotel-luxury-paris{
+    #hotel-luxury{
     font-size:60px;
-    margin-top:90px;
-    margin-left:100px;
+    margin-top:150px;
+    margin-left:150px;
     font-family:serif;
     color:white;
     }
@@ -45,8 +45,6 @@ st.markdown(
     h3{
     font-size:20px
     }
-    p{
-    color:white;}
     </style>
     """,
     unsafe_allow_html=True
