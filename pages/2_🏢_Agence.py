@@ -88,4 +88,30 @@ query5=conn.query("select code_a,site_web,telephone,concat(nom_ville,' ',rue_a,'
 st.header("Nos agences:")
 st.write(query5)
 
+#************* Question 4 :*************
+
+st.header("🔍 Rechercher des agences par ville")
+
+ville_recherche = st.text_input("Entrez le nom de la ville :")
+
+if ville_recherche:
+    query_ville = conn.query(
+        """
+        SELECT 
+            code_a,
+            site_web,
+            telephone,
+            CONCAT(nom_ville,' ',rue_a,' ',num_a,' ',code_postal,' ',pays_a) AS adresse_complete
+        FROM AGENCE_DE_VOYAGE
+        WHERE LOWER(nom_ville) = LOWER(:ville)
+        """,
+        params={"ville": ville_recherche}
+    )
+
+    if len(query_ville) > 0:
+        st.success(f"Agences disponibles à {ville_recherche} :")
+        st.write(query_ville)
+    else:
+        st.warning(f"Aucune agence trouvée dans la ville : {ville_recherche}")
+
 
