@@ -22,7 +22,7 @@ services:
       DB_NAME: hotel
     ports:
       - "8501:8501"
-    command: streamlit run 1_📃_Accueil.py --server.port=8501 --server.address 0.0.0.0 --server.headless=true
+    command: streamlit run Accueil.py --server.port=8501 --server.address 0.0.0.0 --server.headless=true
 
   db:
     image: mysql:latest
