@@ -101,7 +101,6 @@ with email:
         unsafe_allow_html=True
     )
     st.subheader("hoteLuxury@gmail.com")
-st.caption("NOM et PRENOMS: **********************")
 #tetstimonials section
 st.markdown("---")
 st.subheader("Avis des clients")
@@ -120,5 +119,6 @@ with testimonial_2:
 with testimonial_3:
     st.write('"Séjour luxueux et inoubliable."')
     st.caption("- Leila")
+st.caption("NOM et PRENOMS: **********************")
 
 
