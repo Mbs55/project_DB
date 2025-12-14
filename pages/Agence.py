@@ -1,8 +1,10 @@
+import streamlit as st
+import pandas as pd
+from streamlit_folium import st_folium
+import folium
+
 def agence():
-    import streamlit as st
-    import pandas as pd
-    from streamlit_folium import st_folium
-    import folium
+
     st.set_page_config(page_title="AGENCES", layout="wide")
 
     st.markdown("""
@@ -77,6 +79,7 @@ def agence():
         c.metric(f"La Ville {query3["nom_ville"]} :", query3["compteur"], border=True)
 
     # ***********************************Question 2:MAP**********************
+    st.divider()
     st.header("Carte:")
     m = folium.Map(location=[34.020882, -6.841650], zoom_start=8)
     query4 = conn.query(
@@ -90,12 +93,13 @@ def agence():
         )).add_to(m)
 
     st_data = st_folium(m, width="100%")
-
+    st.divider()
     # *************************************Question 3:*********************************
     query5 = conn.query(
         "select code_a,site_web,telephone,concat(nom_ville,' ',rue_a,' ',num_a,' ',code_postal,' ',pays_a) as adresse_complete from AGENCE_DE_VOYAGE;")
     st.header("Nos agences:")
     st.write(query5)
+    st.divider()
 
     # ************* Question 4 :*************
 
@@ -122,24 +126,7 @@ def agence():
             st.write(query_ville)
         else:
             st.warning(f"Aucune agence trouvée dans la ville : {ville_recherche}")
-
-    st.markdown("---")
-    st.subheader("Avis des clients")
-    st.write("Voici ce que nos clients disent de nous:")
-
-    testimonial_1, testimonial_2, testimonial_3 = st.columns(3)
-
-    with testimonial_1:
-        st.write('"Expérience incroyable!"')
-        st.caption("- Alice")
-
-    with testimonial_2:
-        st.write('"Personnel très accueillant."')
-        st.caption("- Karim")
-
-    with testimonial_3:
-        st.write('"Séjour luxueux et inoubliable."')
-        st.caption("- Leila")
+    st.divider()
 
 agence()
 
