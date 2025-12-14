@@ -100,13 +100,18 @@ SELECT
     c.code_c,
     c.etage,
     c.surface,
-    c.type_chambre,
+    CASE
+        WHEN c.surface <= 60 THEN 'Simple'
+        WHEN c.surface <= 120 THEN 'Double'
+        WHEN c.surface <= 180 THEN 'Triple'
+        ELSE 'Suite'
+    END AS type_chambre,
     GROUP_CONCAT(DISTINCT e.equipement SEPARATOR ', ') AS equipements,
     GROUP_CONCAT(DISTINCT h.espace_dispo SEPARATOR ', ') AS espaces
 FROM CHAMBRE c
 LEFT JOIN CHAMBRE_EQUIPMENT e ON c.code_c = e.code_c
 LEFT JOIN HAS_ESPACE_DISPO h ON c.code_c = h.code_c
-GROUP BY c.code_c, c.etage, c.surface, c.type_chambre
+GROUP BY c.code_c, c.etage, c.surface;
 """
 df = conn.query(query)
 
