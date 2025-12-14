@@ -3,6 +3,7 @@ import pandas as pd
 from streamlit_option_menu import option_menu
 
 st.set_page_config(page_title="Accueil")
+#Sidebar with hamburger menu#
 
 st.markdown(
     """
@@ -78,19 +79,46 @@ with col3:
 st.write("Contactez-nous:")
 contact,facebook,phone,email=st.columns(4)
 with contact:
-    st.image("https://img.icons8.com/ios/50/ffffff/instagram.png")
+    st.markdown(
+        '[![Instagram](https://img.icons8.com/ios/50/ffffff/instagram.png)](https://www.instagram.com/hotel_luxury)',
+        unsafe_allow_html=True
+    )
     st.subheader("Instagram")
 with facebook:
-    st.image("https://img.icons8.com/ios/50/ffffff/facebook.png")
+    st.markdown(
+        '[![Facebook](https://img.icons8.com/ios/50/ffffff/facebook.png)](https://www.facebook.com/hotel_luxury)',
+        unsafe_allow_html=True
+    )
     st.subheader("Facebook")
+
 with phone:
     st.image("https://img.icons8.com/ios/50/ffffff/phone.png")
     st.subheader("+212 05 99 99 99 99")
+
 with email:
-    st.image("https://img.icons8.com/ios/50/ffffff/email.png")
+    st.markdown(
+        '[![Email](https://img.icons8.com/ios/50/ffffff/email.png)](mailto:hoteLuxury@gmail.com)',
+        unsafe_allow_html=True
+    )
     st.subheader("hoteLuxury@gmail.com")
-
-
 st.caption("NOM et PRENOMS: **********************")
+#tetstimonials section
+st.markdown("---")
+st.subheader("Avis des clients")
+st.write("Voici ce que nos clients disent de nous:")
+
+testimonial_1, testimonial_2, testimonial_3 = st.columns(3)
+
+with testimonial_1:
+    st.write('"Expérience incroyable!"')
+    st.caption("- Alice")
+
+with testimonial_2:
+    st.write('"Personnel très accueillant."')
+    st.caption("- Karim")
+
+with testimonial_3:
+    st.write('"Séjour luxueux et inoubliable."')
+    st.caption("- Leila")
 
 
