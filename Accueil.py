@@ -49,10 +49,12 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-#Layout with collapsible effect#
-st.title("Hotel Luxury\n\n\n\n\n")
-#st.write("caracteristique Principale:")
-st.title("Les caractéristiques de notre hôtel")
+#collapsible effect#
+main_container = st.container()
+with main_container:
+  st.title("Hotel Luxury\n\n\n\n\n")
+  #st.write("caracteristique Principale:")
+  st.title("Les caractéristiques de notre hôtel")
 
 # Créer 3 colonnes
 col1, col2, col3 = st.columns(3)
