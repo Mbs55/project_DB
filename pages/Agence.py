@@ -4,8 +4,10 @@ def agence():
     from streamlit_folium import st_folium
     import folium
     st.set_page_config(page_title="AGENCES", layout="wide")
+
     st.markdown("""
         <style>
+        
         /* Reset or override homepage styles */
         [data-testid="stHeader"]{
         background-color:rgba(255,255,255,0);
@@ -51,7 +53,7 @@ def agence():
     """, unsafe_allow_html=True)
 
     # **********************************Question 1:***********************
-    st.title("Consultez Nos agence : \n")
+    st.title("Consultez Nos agence : \n\n")
     conn = st.connection(name="hotel")
     query = conn.query("select count(distinct code_a) from AGENCE_DE_VOYAGE;")
     query2 = conn.query("select count(distinct nom_ville) from VILLE ;")
@@ -59,7 +61,7 @@ def agence():
     a, b, c = st.columns(3)
     with a:
         st.subheader("Nos Agences de Voyage")
-        st.write("Consultez l'agence la plus proche de vous\n")
+        st.write("Plusieurs établissements, une seule signature hôtelière:\n")
         a.metric("Nombre d' agence:", query["count(distinct code_a)"], border=True)
 
     with b:
@@ -138,22 +140,6 @@ def agence():
     with testimonial_3:
         st.write('"Séjour luxueux et inoubliable."')
         st.caption("- Leila")
-    # ---------------- FAQ Section ----------------
-    st.title("Foire aux Questions (FAQ)")
-
-    with st.expander("Quels sont les horaires d'ouverture de l'hôtel ?"):
-        st.write("Notre hôtel est ouvert 24h/24 et 7j/7 pour vous accueillir.")
-
-    with st.expander("Est-ce que l'hôtel propose un service de navette ?"):
-        st.write("Oui, nous proposons un service de navette aéroport sur réservation.")
-
-    with st.expander("Les animaux de compagnie sont-ils autorisés ?"):
-        st.write("Oui, les animaux de compagnie sont acceptés sous certaines conditions.")
-
-    with st.expander("Proposez-vous des formules tout compris ?"):
-        st.write("Oui, nous avons plusieurs formules adaptées à vos besoins et préférences.")
-
-    st.caption("NOM et PRENOMS: **********************")
 
 agence()
 

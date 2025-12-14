@@ -1,8 +1,12 @@
 import streamlit as st
 
 
-st.set_page_config(page_title="Accueil")
+st.set_page_config(page_title="Accueil",layout="wide")
+
+
+
 st.markdown('<div class="home-page">', unsafe_allow_html=True)
+
 
 st.markdown("""
     <style>

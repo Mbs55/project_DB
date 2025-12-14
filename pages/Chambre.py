@@ -1,5 +1,6 @@
 import streamlit as st
-st.set_page_config(page_title="chambres")
+st.set_page_config(page_title="chambres",layout="wide")
+
 def chambres():
     '''
 
@@ -29,19 +30,4 @@ def chambres():
     with testimonial_3:
         st.write('"Séjour luxueux et inoubliable."')
         st.caption("- Leila")
-    # ---------------- FAQ Section ----------------
-    st.title("Foire aux Questions (FAQ)")
-
-    with st.expander("Quels sont les horaires d'ouverture de l'hôtel ?"):
-        st.write("Notre hôtel est ouvert 24h/24 et 7j/7 pour vous accueillir.")
-
-    with st.expander("Est-ce que l'hôtel propose un service de navette ?"):
-        st.write("Oui, nous proposons un service de navette aéroport sur réservation.")
-
-    with st.expander("Les animaux de compagnie sont-ils autorisés ?"):
-        st.write("Oui, les animaux de compagnie sont acceptés sous certaines conditions.")
-
-    with st.expander("Proposez-vous des formules tout compris ?"):
-        st.write("Oui, nous avons plusieurs formules adaptées à vos besoins et préférences.")
-
-    st.caption("NOM et PRENOMS: **********************")
+chambres()
