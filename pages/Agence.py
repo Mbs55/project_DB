@@ -120,7 +120,7 @@ st.header("Nos agences:")
 for i in range(4):
     cols = st.columns([4, 1])
     with cols[0]:
-        st.subheader("Nom de l'agence:", query5.iloc[i]["code_a"])
+        st.write("code de l'agence:", query5.iloc[i]["code_a"])
         st.write("📍 Adresse:", query5.iloc[i]["adresse_complete"])
         st.write("💻 Pour Plus d informations Visiter le Site Web: ", query5.iloc[i]["site_web"])
         st.write("📞 Contactez-nous:", query5.iloc[i]["telephone"])
@@ -132,7 +132,7 @@ with st.expander("Plus", expanded=False):
     for i in range(4, len(query5)):
         cols = st.columns([4])
         with cols[0]:
-            st.subheader("Nom de l'agence:", query5.iloc[i]["code_a"])
+            st.write("code de l'agence:", query5.iloc[i]["code_a"])
             st.write("📍 Adresse:", query5.iloc[i]["adresse_complete"])
             st.write("💻 Pour Plus d informations Visiter le Site Web: ", query5.iloc[i]["site_web"])
             st.write("📞 Contactez-nous:", query5.iloc[i]["telephone"])
