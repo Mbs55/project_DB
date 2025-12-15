@@ -4,21 +4,21 @@ import streamlit as st
 st.set_page_config(page_title="Accueil",layout="wide")
 
 
+st.sidebar.success("Select Any Page from here")
 
-st.markdown('<div class="home-page">', unsafe_allow_html=True)
 
 
 st.markdown("""
     <style>
-    
+
     [data-testid="stHeader"]{
      background-color:rgba(255,255,255,0);
      }
-     
+
     #hotel-luxury{
     font-size:60px;
     margin-top:150px;
-    margin-left:150px;
+    margin-left:300px;
     font-family:serif;
     color:white;
     margin-bottom:400px;
@@ -32,28 +32,10 @@ st.markdown("""
         height: 100%;
 
     }
-     [data-test-script-state="initial"]{
-    background-color:rgb(255,255,255);
-
-    }
-
-    /* Change sidebar background */
-     [data-testid="stSidebar"] {
-        background-color: black;
-    }
-    .home-page #les-caracteristiques-de-notre-hotel{
-    margin-top:500px;
-    }
-    [data-testid="stHorizontalBlock"]{
-    margin-bottom:200px;
-    }
-    .home-page h3{
-    font-size:20px
-    }
     </style>
     """
 
-    , unsafe_allow_html=True)
+            , unsafe_allow_html=True)
 
 main_container = st.container()
 with main_container:
@@ -61,7 +43,8 @@ with main_container:
     # st.write("caracteristique Principale:")
     st.title("Les caractéristiques de notre hôtel")
 
-    col1, col2, col3 = st.columns(3)
+
+col1, col2, col3 = st.columns(3)
 
 with col1:
         st.image("https://img.icons8.com/ios-filled/50/ffffff/swimming-pool.png")
@@ -102,35 +85,28 @@ st.markdown(
         """,
         unsafe_allow_html=True
     )
+st.divider()
 st.write("Contactez-nous:")
-contact, facebook, phone, email = st.columns(4)
+contact, facebook, phone, email = st.columns([2,2,2,2])
 with contact:
-        st.markdown(
-            '[![Instagram](https://img.icons8.com/ios/50/ffffff/instagram.png)](https://www.instagram.com/hotel_luxury)',
-            unsafe_allow_html=True
-        )
+        st.image("https://img.icons8.com/ios/50/ffffff/instagram.png")
         st.subheader("Instagram")
 with facebook:
-        st.markdown(
-            '[![Facebook](https://img.icons8.com/ios/50/ffffff/facebook.png)](https://www.facebook.com/hotel_luxury)',
-            unsafe_allow_html=True
-        )
-        st.subheader("Facebook")
+    st.image("https://img.icons8.com/ios/50/ffffff/facebook.png")
+    st.subheader("Facebook")
 
 with phone:
         st.image("https://img.icons8.com/ios/50/ffffff/phone.png")
         st.subheader("+212 05 99 99 99 99")
 
 with email:
-        st.markdown(
-            '[![Email](https://img.icons8.com/ios/50/ffffff/email.png)](mailto:hoteLuxury@gmail.com)',
-            unsafe_allow_html=True
-        )
+        st.image("https://img.icons8.com/ios/50/ffffff/email.png")
+
         st.subheader("hoteLuxury@gmail.com")
 
 #tetstimonials section
-st.markdown('<div class="home-page2">', unsafe_allow_html=True)
 st.markdown("---")
+
 st.subheader("Avis des clients")
 st.write("Voici ce que nos clients disent de nous:")
 
@@ -164,8 +140,6 @@ with st.expander("Proposez-vous des formules tout compris ?"):
 
 st.caption("NOM et PRENOMS: **********************")
 
-
-st.markdown('</div>', unsafe_allow_html=True)
 
 
 
