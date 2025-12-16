@@ -28,6 +28,16 @@ st.markdown("""
     background-size: cover;
     background-repeat: no-repeat; 
     }
+    [data-testid="stSidebar"]{
+    background-color:rgba(3,3,0,0.7);}
+        [data-testid="stSidebarHeader"]{
+    background-image: url(https://media.istockphoto.com/id/1092200002/vector/luxury-hotel-logo-vector-design-on-black-background.jpg?s=612x612&w=0&k=20&c=GiriWYtD7uai5bf6Ac23IVCE2NKpSc5X3CGf6cUq47U=);
+    background-size: cover;
+    background-repeat: no-repeat; 
+    height:150px;
+    border-radius:15px;
+    margin-bottom:70px;
+    }
 
     [data-testid="stAppViewContainer"] {
                     background-image:  linear-gradient(155deg, rgba(12, 13, 20, 0.200) 0%, rgba(2, 3, 3, 0.500) 100%),url("https://wallpapercave.com/wp/wp12814430.jpg");
