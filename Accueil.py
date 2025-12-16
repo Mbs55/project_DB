@@ -32,6 +32,16 @@ st.markdown("""
         height: 100%;
 
     }
+    [data-testid="stSidebarNavLink"] span {
+                color:white;
+    }
+    [data-testid="stSidebarContent"]{
+    border-radius:15px;
+    }            
+    [data-testid="stSidebarHeader"]{
+    background-image: url("./assets/hotel.webp");
+    background-size: cover;
+    background-repeat: no-repeat;") }
     </style>
     """
 

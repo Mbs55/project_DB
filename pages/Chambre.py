@@ -15,6 +15,17 @@ st.markdown("""
 [data-testid="stHeader"]{
     background-color: rgba(255,255,255,0);
 }
+[data-testid="stSidebarNavLink"] span {
+                
+                color:white;
+    }
+       [data-testid="stSidebarContent"]{
+    border-radius:15px;
+    }            
+    [data-testid="stSidebarHeader"]{
+    background-image: url("./assets/hotel.webp");
+    background-size: cover;
+    background-repeat: no-repeat;") }            
 
 /* Fond principal avec overlay plus lisible */
 [data-testid="stAppViewContainer"] {
