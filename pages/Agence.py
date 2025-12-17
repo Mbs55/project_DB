@@ -2,158 +2,243 @@ import streamlit as st
 import pandas as pd
 from streamlit_folium import st_folium
 import folium
-
 st.set_page_config(page_title="AGENCES", layout="wide")
 
-# ======================= STYLE =======================
+
+
+
 st.markdown("""
-<style>
-[data-testid="stHeader"]{
-    background-color:rgba(255,255,255,0);
-}
-[data-testid="stMetric"]{
-    border-radius: 15px;
-    background-color:rgba(118, 107, 129, 0.4);
-}
-h1, h2, h3, h4, h5 {
+    <style>
+
+    [data-testid="stHeader"]{
+                background-color:rgba(255,255,255,0);
+                }
+     [data-testid="stMetric"]{
+                border-radius: 15px;
+                background-color:rgba(0,0,0,0.4);
+                }
+    [data-testid="stSidebarNavLink"] span {
+    color:white;
+    }      
+    [data-testid="stToolbar"]{
+    background-color:transparent;
+}      
+       [data-testid="stSidebarContent"]{
+    border-radius:15px;
+    }      
+    #carte-de-nos-agences{
+    font-family:serif;
+    }      
+    [data-testid="stBaseButton-secondary"]{
+    margin-bottom:100px;
+    }
+    [data-testid="stSidebarHeader"]{
+    background-image: url("./assets/hotel.webp");
+    background-size: cover;
+    background-repeat: no-repeat; 
+    }
+    [data-testid="stSidebar"]{
+    background-color:rgba(3,3,0,0.7);}
+        [data-testid="stSidebarHeader"]{
+    background-image: url(https://media.istockphoto.com/id/1092200002/vector/luxury-hotel-logo-vector-design-on-black-background.jpg?s=612x612&w=0&k=20&c=GiriWYtD7uai5bf6Ac23IVCE2NKpSc5X3CGf6cUq47U=);
+    background-size: cover;
+    background-repeat: no-repeat; 
+    height:150px;
+    border-radius:15px;
+    margin-bottom:70px;
+    }
+    [data-testid="stAppDeployButton"]{
+    visibility:hidden;}
+    
+
+    [data-testid="stAppViewContainer"] {
+                    background-image:   linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.7)
+        ),url("https://wallpapercave.com/wp/wp12814430.jpg");
+                    background-size: cover;
+                    background-repeat: no-repeat;
+                    background-attachment: fixed;
+                    height: 100%;}
+
+    #map_div{
+                    margin-bottom:300px;
+
+                }
+    #consultez-nos-agences{
+    font-size:60px;
+    margin-top:150px;
+    margin-left:200px;
+    font-family:serif;
+    color:white;
+    margin-bottom:400px;
+    
+    }            
+    [data-testid="stHorizontalBlock"]{
+    margin-bottom:50px;
+    
+    }
+        h1, h2, h3, h4, h5 {
     color: white !important;
     font-weight: 800;
 }
+
+/* TEXTE */
 p, label, span, li {
     color: #F5F5DC !important;
     font-size: 16px;
 }
-[data-testid="stAppViewContainer"] {
-    background-image: linear-gradient(
-        155deg,
-        rgba(12, 13, 20, 0.2) 0%,
-        rgba(2, 3, 3, 0.5) 100%
-    ),
-    url("https://wallpapercave.com/wp/wp12814430.jpg");
-    background-size: cover;
-    background-attachment: fixed;
+[data-testid="stMetricValue"] div{
+    color:white !important;
 }
-</style>
-""", unsafe_allow_html=True)
+[data-testid="stBaseButton-secondary"]{
+background-color:rgba(0,0,0,0.4) !important;
+}
+#nos-agences{
+margin-bottom:50px;
+font-family:serif;
 
-st.title("Consultez Nos Agences")
+}
 
-# ======================= DB CONNECTION =======================
-conn = st.connection("hotel")
 
-# ======================= METRICS =======================
-query_agences = conn.query("SELECT COUNT(CodA) AS nb FROM TRAVEL_AGENCY;")
-query_villes = conn.query("SELECT COUNT(Name) AS nb FROM CITY;")
-query_top_ville = conn.query("""
-    SELECT City_Address, COUNT(*) AS compteur
-    FROM TRAVEL_AGENCY
-    GROUP BY City_Address
-    ORDER BY compteur DESC;
-""")
 
+
+ 
+    
+                </style>                
+
+
+    """, unsafe_allow_html=True)
+st.title("Consultez Nos agences : \n\n")
+
+
+
+
+
+# **********************************Question 1:***********************
+conn = st.connection(name="hotel")
+query = conn.query("select count(CodA) from TRAVEL_AGENCY;")
+query2 = conn.query("select count(Name) from CITY ;")
+query3 = conn.query("select City_Address,count(*) as compteur from TRAVEL_AGENCY group by City_Address order by 2;")
 a, b, c = st.columns(3)
-
+df = pd.DataFrame(query3)
+query3 = df.iloc[-1]
 with a:
-    st.metric("Nombre d'agences", query_agences.iloc[0]["nb"])
+    st.subheader("Nos Agences de Voyage")
+    st.write("Plusieurs établissements, une seule signature hôtelière:\n")
+    a.metric("Nombre d' agence:", query["count(CodA)"], border=True)
 
 with b:
-    st.metric("Nombre de villes", query_villes.iloc[0]["nb"])
+    st.subheader("Réseau étendu:")
+    st.write("Le confort et le service de notre hôtel, où que vous soyez")
+    b.metric("Nombre de ville:", query2["count(Name)"], border=True)
+
 
 with c:
-    top = query_top_ville.iloc[0]
-    st.metric(f"Ville la plus présente : {top['City_Address']}", top["compteur"])
+    st.subheader("Forte présence")
+    st.write("Présent avec plusieurs agences hôtelières dans la ville:")
+    c.metric(f"La Ville {query3["City_Address"]} :", query3["compteur"], border=True)
+
+
+
+
+
+
+
+
+
+
 
 st.divider()
-
-# ======================= MAP =======================
-st.header("📍 Carte de nos agences")
-
-coords = conn.query("""
-    SELECT CITY.Latitude, CITY.Longitude
-    FROM CITY
-    JOIN TRAVEL_AGENCY
-        ON TRAVEL_AGENCY.City_Address = CITY.Name;
-""")
-
-df_coords = pd.DataFrame(coords)
-
-m = folium.Map(
-    location=[df_coords.iloc[0]["Latitude"], df_coords.iloc[0]["Longitude"]],
-    zoom_start=6
-)
-
-for _, row in df_coords.iterrows():
-    folium.Marker(
-        location=[row["Latitude"], row["Longitude"]],
-        icon=folium.Icon(icon="map-marker", prefix="fa", color="red")
-    ).add_to(m)
-
-st_folium(m, width="70%")
-
+st.header("📍 Carte De Nos Agences:")
+query4 = conn.query("select CITY.Name,CITY.Longitude,CITY.Latitude from CITY,TRAVEL_AGENCY where TRAVEL_AGENCY.City_Address=CITY.Name;")
+df = pd.DataFrame(query4)
+m = folium.Map(location=[df.loc[2]["Latitude"], df.loc[2]["Longitude"]], zoom_start=5)
+for i in range(len(df)):
+    folium.Marker(location=[df.loc[i]["Latitude"], df.loc[i]["Longitude"]], icon=folium.Icon(
+            icon="map-marker",
+            prefix="fa",
+            color="red",
+        ),tooltip=df.iloc[i]["Name"],
+        popup=f"{df.iloc[i]["Name"]}").add_to(m)
+st_data = st_folium(m, width="70%")
 st.divider()
 
-# ======================= SEARCH BY CITY =======================
-st.header("🔍 Recherche des agences par ville")
 
-ville = st.text_input("Entrez le nom de la ville")
 
-if ville:
-    result = conn.query("""
-        SELECT
-            CodA,
-            WebSite,
-            Tel,
-            CONCAT(
-                City_Address,' ',
-                Street_Address,' ',
-                Num_Address,' ',
-                ZIP_Address,' ',
-                Country_Address
-            ) AS adresse_complete
-        FROM TRAVEL_AGENCY
-        WHERE LOWER(City_Address) = LOWER(:ville)
-    """, params={"ville": ville})
 
-    if len(result) > 0:
-        st.success(f"Agences disponibles à {ville}")
-        st.dataframe(result)
-    else:
-        st.warning("Aucune agence trouvée")
 
+
+
+
+
+
+
+
+
+
+
+
+st.header("🔍 Recherche Des Agences par Ville")
+ville_recherche = st.text_input("Entrez le Nom de la ville :")
+bt=st.button("Chercher")
+if ville_recherche:
+            query_ville = conn.query(
+                """
+                SELECT 
+                    CodA,
+                    WebSite,
+                    Tel,
+                    CONCAT(City_Address,' ',Street_Address,' ',Num_Address,' ',ZIP_Address,' ',Country_Address) AS adresse_complete
+                FROM TRAVEL_AGENCY
+                WHERE LOWER(City_Address) = LOWER(:city)
+                """,
+                params={"city": ville_recherche}
+            )
+
+            if len(query_ville) > 0:
+                st.success(f"Agences disponibles à {ville_recherche} :")
+                st.dataframe(query_ville)
+            else:
+                st.warning(f"Aucune agence trouvée dans la ville : {ville_recherche}")
 st.divider()
 
-# ======================= ALL AGENCIES =======================
-st.header("Nos agences")
 
-all_agences = conn.query("""
-    SELECT
-        CodA,
-        WebSite,
-        Tel,
-        CONCAT(
-            City_Address,' ',
-            Street_Address,' ',
-            Num_Address,' ',
-            ZIP_Address,' ',
-            Country_Address
-        ) AS adresse_complete
-    FROM TRAVEL_AGENCY;
-""")
 
-for i in range(min(4, len(all_agences))):
-    cols = st.columns([4, 1])
+
+
+
+
+
+
+
+
+
+
+
+query5 = conn.query(
+        "select CodA,WebSite,Tel,CONCAT(City_Address,' ',Street_Address,' ',Num_Address,' ',ZIP_Address,' ',Country_Address) AS adresse_complete from TRAVEL_AGENCY;")
+st.header("Nos agences:")
+for i in range(4):
+    cols = st.columns([4, 2])
     with cols[0]:
-        st.subheader(f"Agence {all_agences.iloc[i]['CodA']}")
-        st.write("📍 Adresse :", all_agences.iloc[i]["adresse_complete"])
-        st.write("💻 Site web :", all_agences.iloc[i]["WebSite"])
-        st.write("📞 Téléphone :", all_agences.iloc[i]["Tel"])
+        st.write("Code D'Agence:", query5.iloc[i]["CodA"])
+        st.write("📍 Adresse:", query5.iloc[i]["adresse_complete"])
+        st.write("💻 Pour Plus d informations Visiter le Site Web: ", query5.iloc[i]["WebSite"])
+        st.write("📞 Contactez-nous:", query5.iloc[i]["Tel"])
     with cols[1]:
-        st.image(f"./assets/image{i}.webp", width=250)
-    st.divider()
+        st.image(f"./assets/image{i}.webp", width=300)
 
-with st.expander("Voir plus"):
-    for i in range(4, len(all_agences)):
-        st.write("🏢 Agence", all_agences.iloc[i]["CodA"])
-        st.write("📍", all_agences.iloc[i]["adresse_complete"])
-        st.write("📞", all_agences.iloc[i]["Tel"])
-        st.divider()
+    st.divider()
+with st.expander("Plus", expanded=False):
+    for i in range(4, len(query5)):
+        cols = st.columns([4])
+        with cols[0]:
+            st.write("code de l'agence:", query5.iloc[i]["CodA"])
+            st.write("📍 Adresse:", query5.iloc[i]["adresse_complete"])
+            st.write("💻 Pour Plus d informations Visiter le Site Web: ", query5.iloc[i]["WebSite"])
+            st.write("📞 Contactez-nous:", query5.iloc[i]["Tel"])
+
+st.divider()
+
+
+
+

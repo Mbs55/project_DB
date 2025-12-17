@@ -34,6 +34,9 @@ st.markdown("""
     border-radius:15px;
     margin-bottom:70px;
     }
+    [data-testid="stToolbar"]{
+    background-color:transparent;
+}
 
     [data-testid="stAppViewContainer"] {
                     background-image:  linear-gradient(155deg, rgba(12, 13, 20, 0.200) 0%, rgba(2, 3, 3, 0.500) 100%),url("https://images.unsplash.com/photo-1618773928121-c32242e63f39");
@@ -44,8 +47,10 @@ st.markdown("""
 
     #map_div{
                     margin-bottom:300px;
-
-                }
+                    }
+                [data-testid="stAppDeployButton"]{
+    visibility:hidden;}
+    
     #consultez-nos-agences{
     font-size:60px;
     margin-top:150px;
