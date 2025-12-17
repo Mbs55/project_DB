@@ -63,6 +63,20 @@ st.markdown("""
     margin-bottom:100px;
     
     }
+        h1, h2, h3, h4, h5 {
+    color: white !important;
+    font-weight: 800;
+}
+
+/* TEXTE */
+p, label, span, li {
+    color: #F5F5DC !important;
+    font-size: 16px;
+}
+[data-testid="stMetricValue"] div{
+    color:white !important;
+}
+ 
     
                 </style>                
 
@@ -113,9 +127,9 @@ with c:
 # ***********************************Question 2:MAP**********************
 st.divider()
 st.header("📍 Carte De Nos Agences:")
-m = folium.Map(location=[34.020882, -6.841650], zoom_start=8)
 query4 = conn.query("select CITY.Longitude,CITY.Latitude from CITY,TRAVEL_AGENCY where TRAVEL_AGENCY.City_Address=CITY.Name;")
 df = pd.DataFrame(query4)
+m = folium.Map(location=[df.loc[0]["Latitude"], df.loc[0]["Longitude"]], zoom_start=8)
 for i in range(len(df)):
     folium.Marker(location=[df.loc[i]["Latitude"], df.loc[i]["Longitude"]], icon=folium.Icon(
             icon="map-marker",
@@ -152,7 +166,7 @@ if ville_recherche:
                 Tel,
                 CONCAT(City_Address,' ',Street_Address,' ',Num_Address,' ',ZIP_Address,' ',Country_Address) AS adresse_complete
             FROM TRAVEL_AGENCY
-            WHERE LOWER(Country_Address) = LOWER(:ville)
+            WHERE LOWER(City_Address) = LOWER(:ville)
             """,
             params={"ville": ville_recherche}
         )

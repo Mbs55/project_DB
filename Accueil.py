@@ -20,7 +20,6 @@ st.markdown("""
     margin-top:150px;
     margin-left:300px;
     font-family:serif;
-    color:white;
     margin-bottom:400px;
     }
 
@@ -32,9 +31,7 @@ st.markdown("""
         height: 100%;
 
     }
-    [data-testid="stSidebarNavLink"] span {
-                color:white;
-    }            
+    
     [data-testid="stSidebar"]{
     background-color:rgba(3,3,0,0.7);}
     [data-testid="stSidebarHeader"]{
@@ -45,6 +42,16 @@ st.markdown("""
     border-radius:15px;
     margin-bottom:70px;
     }
+    h1, h2, h3, h4, h5 {
+    color: white !important;
+    font-weight: 800;
+}
+
+/* TEXTE */
+p, label, span, li {
+    color: #F5F5DC !important;
+    font-size: 16px;
+}
     </style>
     """
 
@@ -88,7 +95,6 @@ st.markdown(
             border-radius: 15px;
             margin-top: 40px;
             margin-bottom: 100px;
-            color: white;
         ">
             <h3>🔥 Offres spéciale ce mois !</h3>
             <p>Profitez de -20% sur les suites ce mois-ci !</p>
