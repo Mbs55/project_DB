@@ -176,4 +176,4 @@ with footer_container:
         st.image("https://img.icons8.com/ios/50/ffffff/email.png")
 
         st.subheader("hoteLuxury@gmail.com")
-    st.caption("NOM et PRENOMS: Bouhssous Mouad / Atraoui Doha // / /")
+    st.caption("NOM et PRENOMS: Bouhssous Mouad / Atraoui Doha /Amellal Fahd/Benameur Meryem /Bouhazzama Mohammed /Elarifi Zineb")
