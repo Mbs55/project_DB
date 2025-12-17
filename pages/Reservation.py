@@ -90,15 +90,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-def reservation():
-    ''' remplace la connection '''
 
 
 st.markdown("Cette page analyse toutes les réservations de l'hôtel.")
 
 conn = st.connection(name="hotel")
 
-st.subheader(" Les chambres disponnible ")
+st.subheader(" Les Chambres Disponible: ")
 
 query1 = """
     SELECT
@@ -118,37 +116,25 @@ df1 = conn.query(query1)
 
 st.dataframe(df1, use_container_width=True)
 st.markdown("---")
-
-query9 = """SELECT
-    mois,
-    CodR,
-    Floor,
-    SurfaceArea,
-    Type,
-    cout_journalier_moyen
+query="""
+SELECT mois, ROOM_CodR, FLOOR,SurfaceArea,Type,prix_journalier AS Prix_Journalier
 FROM (
     SELECT
-        EXTRACT(MONTH FROM B.StartDate) AS mois,
-        R.CodR,
-        R.Floor,
-        R.SurfaceArea,
-        R.Type,
-        ROUND(AVG(B.Cost / DATEDIFF(B.EndDate, B.StartDate)), 2) AS cout_journalier_moyen,
+        EXTRACT(MONTH FROM StartDate) AS mois,
+        ROOM_CodR,
+        AVG(Cost / NULLIF(DATEDIFF(EndDate, StartDate), 0)) AS prix_journalier,
         RANK() OVER (
-            PARTITION BY EXTRACT(MONTH FROM B.StartDate)
-            ORDER BY AVG(B.Cost / DATEDIFF(B.EndDate, B.StartDate)) DESC
-        ) AS rang
-    FROM BOOKING B
-    JOIN ROOM R ON R.CodR = B.ROOM_CodR
-    GROUP BY
-        mois, R.CodR, R.Floor, R.SurfaceArea, R.Type
-) t
-WHERE rang = 1
+            PARTITION BY EXTRACT(MONTH FROM StartDate)
+            ORDER BY AVG(Cost / NULLIF(DATEDIFF(EndDate, StartDate), 0)) DESC
+        ) AS rnk
+    FROM BOOKING
+    GROUP BY mois, ROOM_CodR
+) t,ROOM where ROOM.CodR=t.ROOM_CodR and rnk = 1
 ORDER BY mois;
 """
 st.subheader(" Chambre avec le Coût Journalier Moyen le Plus Élevé par Mois")
 
-df_top = conn.query(query9)
+df_top = conn.query(query)
 
 st.dataframe(df_top, use_container_width=True)
 st.markdown("---")
@@ -161,7 +147,7 @@ query2 = """
         EXTRACT(MONTH FROM StartDate) AS mois,
         ROUND(AVG(Cost), 2) AS prix_moyen
     FROM BOOKING
-    GROUP BY EXTRACT(MONTH FROM StartDate)
+    GROUP BY mois
     ORDER BY mois;
 """
 df2 = conn.query(query2)
@@ -287,5 +273,3 @@ df_cout = conn.query(query10)
 
 st.line_chart(df_cout.set_index("mois"))
 st.markdown("---")
-
-reservation()
