@@ -80,10 +80,6 @@ with col3:
         st.write("Profitez d'expériences culinaires raffinées.")
         st.caption("Menus variés avec options végétariennes et desserts maison.")
 
-#test
-st.subheader("Découvrez notre hôtel")
-st.image("https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/a3/e7/e2/kenzi-rose-garden.jpg?w=1200&h=-1&s=1", caption="Piscine luxueuse")
-st.image("https://q-xx.bstatic.com/xdata/images/hotel/max500/504201854.jpg?k=f0a0228e757a6ee0bbb3cc8fd8ffe08db035a493c74287a897d86c701b28522d&o=", caption="Suite présidentielle")
 # ---------------- Section Activités à proximité ----------------
 st.markdown("---")
 st.subheader("Activités près de l'hôtel")
