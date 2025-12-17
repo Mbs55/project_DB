@@ -2,10 +2,8 @@ import streamlit as st
 import pandas as pd
 from streamlit_folium import st_folium
 import folium
+
 st.set_page_config(page_title="AGENCES", layout="wide")
-
-
-
 
 st.markdown("""
     <style>
@@ -36,13 +34,13 @@ st.markdown("""
     font-family:serif;
     color:white;
     margin-bottom:400px;
-    
+
     }            
     [data-testid="stHorizontalBlock"]{
     margin-bottom:100px;
-    
+
     }
-    
+
                 </style>                
 
 
@@ -66,7 +64,6 @@ with b:
     st.write("Le confort et le service de notre hôtel, où que vous soyez")
     b.metric("Nombre de ville:", query2["count(distinct nom_ville)"], border=True)
 
-
 with c:
     st.subheader("Forte présence")
     st.write("Présent avec plusieurs agences hôtelières dans la ville:")
@@ -77,49 +74,49 @@ st.divider()
 st.header("Carte:")
 m = folium.Map(location=[34.020882, -6.841650], zoom_start=8)
 query4 = conn.query(
-        "select VILLE.longi,VILLE.latit from VILLE,AGENCE_DE_VOYAGE where AGENCE_DE_VOYAGE.nom_ville=VILLE.nom_ville;")
+    "select VILLE.longi,VILLE.latit from VILLE,AGENCE_DE_VOYAGE where AGENCE_DE_VOYAGE.nom_ville=VILLE.nom_ville;")
 df = pd.DataFrame(query4)
 for i in range(len(df)):
     folium.Marker(location=[df.loc[i]["latit"], df.loc[i]["longi"]], icon=folium.Icon(
-            icon="map-marker",
-            prefix="fa",
-            color="red"
-        )).add_to(m)
+        icon="map-marker",
+        prefix="fa",
+        color="red"
+    )).add_to(m)
 
 st_data = st_folium(m, width="70%")
 st.divider()
 
-#****************************************************************
+# ****************************************************************
 st.header("🔍 Rechercher des agences par ville")
 ville_recherche = st.text_input("Entrez le nom de la ville :")
 
 if ville_recherche:
-        query_ville = conn.query(
-            """
-            SELECT 
-                code_a,
-                site_web,
-                telephone,
-                CONCAT(nom_ville,' ',rue_a,' ',num_a,' ',code_postal,' ',pays_a) AS adresse_complete
-            FROM AGENCE_DE_VOYAGE
-            WHERE LOWER(nom_ville) = LOWER(:ville)
-            """,
-            params={"ville": ville_recherche}
-        )
+    query_ville = conn.query(
+        """
+        SELECT code_a,
+               site_web,
+               telephone,
+               CONCAT(nom_ville, ' ', rue_a, ' ', num_a, ' ', code_postal, ' ', pays_a) AS adresse_complete
+        FROM AGENCE_DE_VOYAGE
+        WHERE LOWER(nom_ville) = LOWER(:ville)
+        """,
+        params={"ville": ville_recherche}
+    )
 
-        if len(query_ville) > 0:
-            st.success(f"Agences disponibles à {ville_recherche} :")
-            st.write(query_ville)
-        else:
-            st.warning(f"Aucune agence trouvée dans la ville : {ville_recherche}")
+    if len(query_ville) > 0:
+        st.success(f"Agences disponibles à {ville_recherche} :")
+        st.write(query_ville)
+    else:
+        st.warning(f"Aucune agence trouvée dans la ville : {ville_recherche}")
 st.divider()
 # *************************************Question 3:*********************************
 query5 = conn.query(
-        "select code_a,site_web,telephone,concat(nom_ville,' ',rue_a,' ',num_a,' ',code_postal,' ',pays_a) as adresse_complete from AGENCE_DE_VOYAGE;")
+    "select code_a,site_web,telephone,concat(nom_ville,' ',rue_a,' ',num_a,' ',code_postal,' ',pays_a) as adresse_complete from AGENCE_DE_VOYAGE;")
 st.header("Nos agences:")
 for i in range(4):
     cols = st.columns([4, 1])
     with cols[0]:
+        st.subheader("Nom de l'agence:", query5.iloc[i]["code_a"])
         st.write("code de l'agence:", query5.iloc[i]["code_a"])
         st.write("📍 Adresse:", query5.iloc[i]["adresse_complete"])
         st.write("💻 Pour Plus d informations Visiter le Site Web: ", query5.iloc[i]["site_web"])
@@ -132,6 +129,7 @@ with st.expander("Plus", expanded=False):
     for i in range(4, len(query5)):
         cols = st.columns([4])
         with cols[0]:
+            st.subheader("Nom de l'agence:", query5.iloc[i]["code_a"])
             st.write("code de l'agence:", query5.iloc[i]["code_a"])
             st.write("📍 Adresse:", query5.iloc[i]["adresse_complete"])
             st.write("💻 Pour Plus d informations Visiter le Site Web: ", query5.iloc[i]["site_web"])
