@@ -15,14 +15,23 @@ st.markdown("""
                 }
      [data-testid="stMetric"]{
                 border-radius: 15px;
-                background-color:rgba(118, 107, 129, 0.4);
+                background-color:rgba(0,0,0,0.4);
                 }
     [data-testid="stSidebarNavLink"] span {
     color:white;
-    }            
+    }      
+    [data-testid="stToolbar"]{
+    background-color:transparent;
+}      
        [data-testid="stSidebarContent"]{
     border-radius:15px;
-    }            
+    }      
+    #carte-de-nos-agences{
+    font-family:serif;
+    }      
+    [data-testid="stBaseButton-secondary"]{
+    margin-bottom:100px;
+    }
     [data-testid="stSidebarHeader"]{
     background-image: url("./assets/hotel.webp");
     background-size: cover;
@@ -38,9 +47,13 @@ st.markdown("""
     border-radius:15px;
     margin-bottom:70px;
     }
+    [data-testid="stAppDeployButton"]{
+    visibility:hidden;}
+    
 
     [data-testid="stAppViewContainer"] {
-                    background-image:  linear-gradient(155deg, rgba(12, 13, 20, 0.200) 0%, rgba(2, 3, 3, 0.500) 100%),url("https://wallpapercave.com/wp/wp12814430.jpg");
+                    background-image:   linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.7)
+        ),url("https://wallpapercave.com/wp/wp12814430.jpg");
                     background-size: cover;
                     background-repeat: no-repeat;
                     background-attachment: fixed;
@@ -60,7 +73,7 @@ st.markdown("""
     
     }            
     [data-testid="stHorizontalBlock"]{
-    margin-bottom:100px;
+    margin-bottom:50px;
     
     }
         h1, h2, h3, h4, h5 {
@@ -76,6 +89,18 @@ p, label, span, li {
 [data-testid="stMetricValue"] div{
     color:white !important;
 }
+[data-testid="stBaseButton-secondary"]{
+background-color:rgba(0,0,0,0.4) !important;
+}
+#nos-agences{
+margin-bottom:50px;
+font-family:serif;
+
+}
+
+
+
+
  
     
                 </style>                
@@ -122,20 +147,18 @@ with c:
 
 
 
-
-
-# ***********************************Question 2:MAP**********************
 st.divider()
 st.header("📍 Carte De Nos Agences:")
-query4 = conn.query("select CITY.Longitude,CITY.Latitude from CITY,TRAVEL_AGENCY where TRAVEL_AGENCY.City_Address=CITY.Name;")
+query4 = conn.query("select CITY.Name,CITY.Longitude,CITY.Latitude from CITY,TRAVEL_AGENCY where TRAVEL_AGENCY.City_Address=CITY.Name;")
 df = pd.DataFrame(query4)
-m = folium.Map(location=[df.loc[0]["Latitude"], df.loc[0]["Longitude"]], zoom_start=8)
+m = folium.Map(location=[df.loc[2]["Latitude"], df.loc[2]["Longitude"]], zoom_start=5)
 for i in range(len(df)):
     folium.Marker(location=[df.loc[i]["Latitude"], df.loc[i]["Longitude"]], icon=folium.Icon(
             icon="map-marker",
             prefix="fa",
-            color="red"
-        )).add_to(m)
+            color="red",
+        ),tooltip=df.iloc[i]["Name"],
+        popup=f"{df.iloc[i]["Name"]}").add_to(m)
 st_data = st_folium(m, width="70%")
 st.divider()
 
@@ -156,28 +179,27 @@ st.divider()
 
 st.header("🔍 Recherche Des Agences par Ville")
 ville_recherche = st.text_input("Entrez le Nom de la ville :")
-
+bt=st.button("Chercher")
 if ville_recherche:
-        query_ville = conn.query(
-            """
-            SELECT 
-                CodA,
-                WebSite,
-                Tel,
-                CONCAT(City_Address,' ',Street_Address,' ',Num_Address,' ',ZIP_Address,' ',Country_Address) AS adresse_complete
-            FROM TRAVEL_AGENCY
-            WHERE LOWER(City_Address) = LOWER(:ville)
-            """,
-            params={"ville": ville_recherche}
-        )
+            query_ville = conn.query(
+                """
+                SELECT 
+                    CodA,
+                    WebSite,
+                    Tel,
+                    CONCAT(City_Address,' ',Street_Address,' ',Num_Address,' ',ZIP_Address,' ',Country_Address) AS adresse_complete
+                FROM TRAVEL_AGENCY
+                WHERE LOWER(City_Address) = LOWER(:city)
+                """,
+                params={"city": ville_recherche}
+            )
 
-        if len(query_ville) > 0:
-            st.success(f"Agences disponibles à {ville_recherche} :")
-            st.dataframe(query_ville)
-        else:
-            st.warning(f"Aucune agence trouvée dans la ville : {ville_recherche}")
+            if len(query_ville) > 0:
+                st.success(f"Agences disponibles à {ville_recherche} :")
+                st.dataframe(query_ville)
+            else:
+                st.warning(f"Aucune agence trouvée dans la ville : {ville_recherche}")
 st.divider()
-# *************************************Question 3:*********************************
 
 
 
@@ -196,7 +218,7 @@ query5 = conn.query(
         "select CodA,WebSite,Tel,CONCAT(City_Address,' ',Street_Address,' ',Num_Address,' ',ZIP_Address,' ',Country_Address) AS adresse_complete from TRAVEL_AGENCY;")
 st.header("Nos agences:")
 for i in range(4):
-    cols = st.columns([4, 1])
+    cols = st.columns([4, 2])
     with cols[0]:
         st.write("Code D'Agence:", query5.iloc[i]["CodA"])
         st.write("📍 Adresse:", query5.iloc[i]["adresse_complete"])
@@ -204,6 +226,7 @@ for i in range(4):
         st.write("📞 Contactez-nous:", query5.iloc[i]["Tel"])
     with cols[1]:
         st.image(f"./assets/image{i}.webp", width=300)
+
     st.divider()
 with st.expander("Plus", expanded=False):
     for i in range(4, len(query5)):
@@ -213,6 +236,7 @@ with st.expander("Plus", expanded=False):
             st.write("📍 Adresse:", query5.iloc[i]["adresse_complete"])
             st.write("💻 Pour Plus d informations Visiter le Site Web: ", query5.iloc[i]["WebSite"])
             st.write("📞 Contactez-nous:", query5.iloc[i]["Tel"])
+
 st.divider()
 
 

@@ -20,6 +20,9 @@ st.markdown("""
 [data-testid="stHeader"]{
     background-color: transparent;
 }
+   [data-testid="stToolbar"]{
+    background-color:transparent;
+}
 
 /* SIDEBAR */
 [data-testid="stSidebar"]{
@@ -30,6 +33,9 @@ st.markdown("""
         background-color: rgba(0,0,0,0.7);
 
 }
+[data-testid="stAppDeployButton"]{
+    visibility:hidden;}
+    
 
 [data-testid="stAppViewContainer"] {
     background-image:
@@ -93,12 +99,16 @@ tbody tr td {
 # TITRE PRINCIPAL
 # =========================
 st.markdown("""
-<h1>🛏️ Gestion des chambres</h1>
-
-<p style="font-size:18px;">
+<div style="margin-left:220px;
+margin-top:150px;
+">
+<h1 style="font-family:serif;">🛏️ Gestion des chambres</h1>
+<p style="font-size:15px;
+margin-bottom:400px;">
 Consultez les <b>chambres disponibles</b> avec leurs 
 <b>caractéristiques complètes</b> dans un cadre élégant et lisible.
 </p>
+</div>
 """, unsafe_allow_html=True)
 
 # =========================
@@ -135,18 +145,34 @@ with st.sidebar:
 # CONNEXION DB
 # =========================
 conn = st.connection("hotel")
+query="""select CodR,FLOOR,SurfaceArea,Type from ROOM """
 
-query = """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+query1 = """
 SELECT 
     r.CodR AS code_c,
     r.Floor AS etage,
     r.SurfaceArea AS surface,
-    CASE
-        WHEN r.SurfaceArea <= 60 THEN 'Simple'
-        WHEN r.SurfaceArea <= 120 THEN 'Double'
-        WHEN r.SurfaceArea <= 180 THEN 'Triple'
-        ELSE 'Suite'
-    END AS type_chambre,
+    r.Type as type_chambre,
     GROUP_CONCAT(DISTINCT a.AMENITIES_Amenity SEPARATOR ', ') AS equipements,
     GROUP_CONCAT(DISTINCT s.SPACES_Space SEPARATOR ', ') AS espaces
 FROM ROOM r
@@ -155,16 +181,11 @@ LEFT JOIN HAS_SPACES s ON r.CodR = s.ROOM_CodR
 GROUP BY r.CodR, r.Floor, r.SurfaceArea;
 """
 
-@st.cache_data
-def load_data():
-    return conn.query(query)
-
-df = load_data()
 
 # =========================
 # FILTRES
 # =========================
-st.subheader("🔍 Filtres des chambres")
+#st.subheader("🔍 Filtres des chambres")
 
 col1, col2, col3 = st.columns(3)
 
@@ -173,52 +194,55 @@ with col1:
         "Type de chambre",
         ["Toutes", "Simple", "Double", "Triple", "Suite"]
     )
-
-with col2:
-    surface_min, surface_max = st.slider(
-        "Surface (m²)",
-        int(df.surface.min()),
-        int(df.surface.max()),
-        (30, 160)
-    )
-
 with col3:
     cuisine = st.checkbox("🍳 Avec cuisine")
-
+st.subheader("📋 Chambres disponibles")
+st.divider()
 # =========================
 # APPLICATION DES FILTRES
 # =========================
-if type_filter != "Toutes":
-    df = df[df.type_chambre == type_filter]
+if type_filter == "Toutes" and not cuisine:
+    st.write(conn.query(query))
+elif type_filter == "Toutes" and cuisine:
+    query = """select CodR,FLOOR,SurfaceArea,Type from ROOM,HAS_SPACES where HAS_SPACES.ROOM_CodR = ROOM.CodR and HAS_SPACES.SPACES_space = "kitchen" """
+    st.write(conn.query(query))
+#*********************************************
 
-df = df[(df.surface >= surface_min) & (df.surface <= surface_max)]
+if type_filter == "Simple":
+        type_filter = "single"  #Conversion fr to en
 
-if cuisine:
-    df = df[df.espaces.str.contains("kitchen", na=False)]
+elif type_filter == "Double":
+        type_filter = "double"
 
+elif type_filter == "Triple":
+        type_filter = "triple"
+elif type_filter == "Suite":
+        type_filter = "suite"
+
+if cuisine and type_filter != "Toutes":
+    st.write(conn.query("""select CodR,FLOOR,SurfaceArea,Type from ROOM,HAS_SPACES where HAS_SPACES.ROOM_CodR = ROOM.CodR and Type =(:type) and HAS_SPACES.SPACES_space = "kitchen" """,params={"type":type_filter}))
+if not cuisine and  type_filter != "Toutes":
+    st.write(conn.query("""select DISTINCT CodR,FLOOR,SurfaceArea,Type from ROOM where Type = (:type) """,params={"type":type_filter}))
 # =========================
 # TABLEAU
 # =========================
-st.subheader("📋 Chambres disponibles")
-st.dataframe(
-    df[["code_c", "etage", "surface", "type_chambre"]],
-    use_container_width=True
-)
+
 
 # =========================
 # IMAGES PAR TYPE
 # =========================
 images = {
-    "Simple": "https://images.unsplash.com/photo-1505691938895-1758d7feb511",
-    "Double": "https://images.unsplash.com/photo-1501117716987-c8e1ecb210c9",
-    "Triple": "https://images.unsplash.com/photo-1560066984-138dadb4c035",
-    "Suite": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b"
+    "single": "https://images.unsplash.com/photo-1505691938895-1758d7feb511",
+    "double": "https://images.unsplash.com/photo-1501117716987-c8e1ecb210c9",
+    "triple": "https://images.unsplash.com/photo-1560066984-138dadb4c035",
+    "suite": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b"
 }
 
 # =========================
 # APERÇU VISUEL
 # =========================
 st.subheader("🏨 Aperçu des chambres")
+df=conn.query(query1)
 
 for _, row in df.head(5).iterrows():
     col1, col2 = st.columns([2, 1])
@@ -237,4 +261,6 @@ for _, row in df.head(5).iterrows():
     with col2:
         st.image(images[row.type_chambre], use_container_width=True)
 
-    st.divider()
+
+
+st.divider()
