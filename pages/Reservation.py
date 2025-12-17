@@ -50,7 +50,7 @@ st.markdown("""
                     }
                 [data-testid="stAppDeployButton"]{
     visibility:hidden;}
-    
+
     #consultez-nos-agences{
     font-size:60px;
     margin-top:150px;
@@ -89,9 +89,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-
-
-
 st.markdown("Cette page analyse toutes les réservations de l'hôtel.")
 
 conn = st.connection(name="hotel")
@@ -116,7 +113,7 @@ df1 = conn.query(query1)
 
 st.dataframe(df1, use_container_width=True)
 st.markdown("---")
-query="""
+query = """
 SELECT mois, ROOM_CodR, FLOOR,SurfaceArea,Type,prix_journalier AS Prix_Journalier
 FROM (
     SELECT
@@ -135,8 +132,9 @@ ORDER BY mois;
 st.subheader(" Chambre avec le Coût Journalier Moyen le Plus Élevé par Mois")
 
 df_top = conn.query(query)
-
-st.dataframe(df_top, use_container_width=True)
+col1,col2=st.columns(2)
+col1.dataframe(df_top,use_container_width=True)
+col2.line_chart(df_top.set_index('mois')[["Prix_Journalier"]])   #prix=y
 st.markdown("---")
 
 # Prix moyen par mois
@@ -259,17 +257,4 @@ col1, col2 = st.columns(2)
 col1.dataframe(df8, use_container_width=True)
 col2.bar_chart(df8.set_index("TRAVEL_AGENCY_CodA"))
 
-st.markdown("---")
-query10 = """SELECT
-    EXTRACT(MONTH FROM StartDate) AS mois,
-    ROUND(AVG(Cost / DATEDIFF(EndDate, StartDate)), 2) AS cout_journalier_moyen
-FROM BOOKING
-GROUP BY EXTRACT(MONTH FROM StartDate)
-ORDER BY mois;
-"""
-st.subheader("Évolution du Coût Journalier Moyen par Mois")
-
-df_cout = conn.query(query10)
-
-st.line_chart(df_cout.set_index("mois"))
 st.markdown("---")
