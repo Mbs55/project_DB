@@ -6,7 +6,7 @@ import pandas as pd
 # =========================
 st.set_page_config(
     page_title="Chambres",
-    page_icon="🛏️",
+    page_icon="🛏",
     layout="wide"
 )
 
@@ -35,7 +35,7 @@ st.markdown("""
 }
 [data-testid="stAppDeployButton"]{
     visibility:hidden;}
-    
+
 
 [data-testid="stAppViewContainer"] {
     background-image:
@@ -102,7 +102,7 @@ st.markdown("""
 <div style="margin-left:220px;
 margin-top:150px;
 ">
-<h1 style="font-family:serif;">🛏️ Gestion des chambres</h1>
+<h1 style="font-family:serif;">🛏 Gestion des chambres</h1>
 <p style="font-size:15px;
 margin-bottom:400px;">
 Consultez les <b>chambres disponibles</b> avec leurs 
@@ -145,27 +145,7 @@ with st.sidebar:
 # CONNEXION DB
 # =========================
 conn = st.connection("hotel")
-query="""select CodR,FLOOR,SurfaceArea,Type from ROOM """
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+query = """select CodR,FLOOR,SurfaceArea,Type from ROOM """
 
 query1 = """
 SELECT 
@@ -181,11 +161,10 @@ LEFT JOIN HAS_SPACES s ON r.CodR = s.ROOM_CodR
 GROUP BY r.CodR, r.Floor, r.SurfaceArea;
 """
 
-
 # =========================
 # FILTRES
 # =========================
-#st.subheader("🔍 Filtres des chambres")
+st.subheader("🔍 Filtres des chambres")
 
 col1, col2, col3 = st.columns(3)
 
@@ -194,36 +173,60 @@ with col1:
         "Type de chambre",
         ["Toutes", "Simple", "Double", "Triple", "Suite"]
     )
+
+variable =conn.query("""select distinct AMENITIES_Amenity from HAS_AMENITIES; """)
+with col2:
+    equipements = st.multiselect(
+        "Equipements souhaites",
+         options=variable.values
+    )
 with col3:
     cuisine = st.checkbox("🍳 Avec cuisine")
 st.subheader("📋 Chambres disponibles")
+
 st.divider()
+
+
 # =========================
 # APPLICATION DES FILTRES
 # =========================
+""""
 if type_filter == "Toutes" and not cuisine:
     st.write(conn.query(query))
 elif type_filter == "Toutes" and cuisine:
-    query = """select CodR,FLOOR,SurfaceArea,Type from ROOM,HAS_SPACES where HAS_SPACES.ROOM_CodR = ROOM.CodR and HAS_SPACES.SPACES_space = "kitchen" """
-    st.write(conn.query(query))
-#*********************************************
+    query = ""select CodR,FLOOR,SurfaceArea,Type from ROOM,HAS_SPACES where HAS_SPACES.ROOM_CodR = ROOM.CodR and HAS_SPACES.SPACES_space = "kitchen" """
+st.write(conn.query(query))
+# *********************************************
+if len(equipements)>0 :
+    selected = equipements
 
+#**********************
 if type_filter == "Simple":
-        type_filter = "single"  #Conversion fr to en
+    type_filter = "single"  # Conversion fr to en
 
 elif type_filter == "Double":
-        type_filter = "double"
+    type_filter = "double"
 
 elif type_filter == "Triple":
-        type_filter = "triple"
+    type_filter = "triple"
 elif type_filter == "Suite":
-        type_filter = "suite"
+    type_filter = "suite"
+"""
+if type_filter :
+    if type_filter != "Toutes":
+        if len(equipements)>0 :
+            conn.query(""select  CodR,FLOOR,SurfaceArea,Type from ROOM,HAS_SPACES where type=type_filter and AMENITIES_Amenity in equipements """)
+        else:
+            conn.query("""select  CodR,FLOOR,SurfaceArea,Type from ROOM where type=type_filter """)
+    else:
+        if len(equipements)>0 :
+            conn.query("""select  CodR,FLOOR,SurfaceArea,Type from ROOM,HAS_SPACES where AMENITIES_Amenity in equipements """)
+        else :
+            conn.query("""select  CodR,FLOOR,SurfaceArea,Type from ROOM  """)
 
-if cuisine and type_filter != "Toutes":
-    st.write(conn.query("""select CodR,FLOOR,SurfaceArea,Type from ROOM,HAS_SPACES where HAS_SPACES.ROOM_CodR = ROOM.CodR and Type =(:type) and HAS_SPACES.SPACES_space = "kitchen" """,params={"type":type_filter}))
-if not cuisine and  type_filter != "Toutes":
-    st.write(conn.query("""select DISTINCT CodR,FLOOR,SurfaceArea,Type from ROOM where Type = (:type) """,params={"type":type_filter}))
-# =========================
+
+
+
 # TABLEAU
 # =========================
 
@@ -231,10 +234,11 @@ if not cuisine and  type_filter != "Toutes":
 # =========================
 # IMAGES PAR TYPE
 # =========================
-images = {
-    "single": "https://images.unsplash.com/photo-1505691938895-1758d7feb511",
-    "double": "https://images.unsplash.com/photo-1501117716987-c8e1ecb210c9",
-    "triple": "https://images.unsplash.com/photo-1560066984-138dadb4c035",
+images =
+{
+    "single": "https://images.unsplash.com/photo-1505691938895-1758d7feb511";
+    "double": "https://images.unsplash.com/photo-1501117716987-c8e1ecb210c9";
+    "triple": "https://images.unsplash.com/photo-1560066984-138dadb4c035";
     "suite": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b"
 }
 
@@ -242,7 +246,7 @@ images = {
 # APERÇU VISUEL
 # =========================
 st.subheader("🏨 Aperçu des chambres")
-df=conn.query(query1)
+df = conn.query(query1)
 
 for _, row in df.head(5).iterrows():
     col1, col2 = st.columns([2, 1])
@@ -260,7 +264,5 @@ for _, row in df.head(5).iterrows():
 
     with col2:
         st.image(images[row.type_chambre], use_container_width=True)
-
-
 
 st.divider()

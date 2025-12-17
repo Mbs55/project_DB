@@ -2,10 +2,8 @@ import streamlit as st
 import pandas as pd
 from streamlit_folium import st_folium
 import folium
+
 st.set_page_config(page_title="AGENCES", layout="wide")
-
-
-
 
 st.markdown("""
     <style>
@@ -49,7 +47,7 @@ st.markdown("""
     }
     [data-testid="stAppDeployButton"]{
     visibility:hidden;}
-    
+
 
     [data-testid="stAppViewContainer"] {
                     background-image:   linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.7)
@@ -70,11 +68,11 @@ st.markdown("""
     font-family:serif;
     color:white;
     margin-bottom:400px;
-    
+
     }            
     [data-testid="stHorizontalBlock"]{
     margin-bottom:50px;
-    
+
     }
         h1, h2, h3, h4, h5 {
     color: white !important;
@@ -101,17 +99,13 @@ font-family:serif;
 
 
 
- 
-    
+
+
                 </style>                
 
 
     """, unsafe_allow_html=True)
 st.title("Consultez Nos agences : \n\n")
-
-
-
-
 
 # **********************************Question 1:***********************
 conn = st.connection(name="hotel")
@@ -131,91 +125,53 @@ with b:
     st.write("Le confort et le service de notre hôtel, où que vous soyez")
     b.metric("Nombre de ville:", query2["count(Name)"], border=True)
 
-
 with c:
     st.subheader("Forte présence")
     st.write("Présent avec plusieurs agences hôtelières dans la ville:")
     c.metric(f"La Ville {query3["City_Address"]} :", query3["compteur"], border=True)
 
-
-
-
-
-
-
-
-
-
-
 st.divider()
 st.header("📍 Carte De Nos Agences:")
-query4 = conn.query("select CITY.Name,CITY.Longitude,CITY.Latitude from CITY,TRAVEL_AGENCY where TRAVEL_AGENCY.City_Address=CITY.Name;")
+query4 = conn.query(
+    "select CITY.Name,CITY.Longitude,CITY.Latitude from CITY,TRAVEL_AGENCY where TRAVEL_AGENCY.City_Address=CITY.Name;")
 df = pd.DataFrame(query4)
 m = folium.Map(location=[df.loc[2]["Latitude"], df.loc[2]["Longitude"]], zoom_start=5)
 for i in range(len(df)):
     folium.Marker(location=[df.loc[i]["Latitude"], df.loc[i]["Longitude"]], icon=folium.Icon(
-            icon="map-marker",
-            prefix="fa",
-            color="red",
-        ),tooltip=df.iloc[i]["Name"],
-        popup=f"{df.iloc[i]["Name"]}").add_to(m)
+        icon="map-marker",
+        prefix="fa",
+        color="red",
+    ), tooltip=df.iloc[i]["Name"],
+                  popup=f"{df.iloc[i]["Name"]}").add_to(m)
 st_data = st_folium(m, width="70%")
 st.divider()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 st.header("🔍 Recherche Des Agences par Ville")
 ville_recherche = st.text_input("Entrez le Nom de la ville :")
-bt=st.button("Chercher")
+bt = st.button("Chercher")
 if ville_recherche:
-            query_ville = conn.query(
-                """
-                SELECT 
-                    CodA,
-                    WebSite,
-                    Tel,
-                    CONCAT(City_Address,' ',Street_Address,' ',Num_Address,' ',ZIP_Address,' ',Country_Address) AS adresse_complete
-                FROM TRAVEL_AGENCY
-                WHERE LOWER(City_Address) = LOWER(:city)
-                """,
-                params={"city": ville_recherche}
-            )
+    query_ville = conn.query(
+        """
+        SELECT CodA,
+               WebSite,
+               Tel,
+               CONCAT(City_Address, ' ', Street_Address, ' ', Num_Address, ' ', ZIP_Address, ' ',
+                      Country_Address) AS adresse_complete
+        FROM TRAVEL_AGENCY
+        WHERE LOWER(City_Address) = LOWER(:city)
+        """,
+        params={"city": ville_recherche}
+    )
 
-            if len(query_ville) > 0:
-                st.success(f"Agences disponibles à {ville_recherche} :")
-                st.dataframe(query_ville)
-            else:
-                st.warning(f"Aucune agence trouvée dans la ville : {ville_recherche}")
+    if len(query_ville) > 0:
+        st.success(f"Agences disponibles à {ville_recherche} :")
+        st.dataframe(query_ville)
+    else:
+        st.warning(f"Aucune agence trouvée dans la ville : {ville_recherche}")
 st.divider()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 query5 = conn.query(
-        "select CodA,WebSite,Tel,CONCAT(City_Address,' ',Street_Address,' ',Num_Address,' ',ZIP_Address,' ',Country_Address) AS adresse_complete from TRAVEL_AGENCY;")
+    "select CodA,WebSite,Tel,CONCAT(City_Address,' ',Street_Address,' ',Num_Address,' ',ZIP_Address,' ',Country_Address) AS adresse_complete from TRAVEL_AGENCY;")
 st.header("Nos agences:")
 for i in range(4):
     cols = st.columns([4, 2])
@@ -238,7 +194,3 @@ with st.expander("Plus", expanded=False):
             st.write("📞 Contactez-nous:", query5.iloc[i]["Tel"])
 
 st.divider()
-
-
-
-
