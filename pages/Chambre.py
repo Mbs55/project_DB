@@ -1,198 +1,240 @@
 import streamlit as st
 import pandas as pd
 
-# PAGE CHAMBRES
-
+# =========================
+# CONFIG PAGE
+# =========================
 st.set_page_config(
     page_title="Chambres",
     page_icon="🛏️",
     layout="wide"
 )
 
+# =========================
+# STYLE CSS (BLANC + BEIGE)
+# =========================
 st.markdown("""
 <style>
-/* En-tête transparent */
+
+/* HEADER */
 [data-testid="stHeader"]{
-    background-color: rgba(255,255,255,0);
+    background-color: transparent;
 }
 
-/* Fond principal avec overlay plus lisible */
+/* SIDEBAR */
+[data-testid="stSidebar"]{
+    background-color: rgba(0,0,0,0.85);
+}
+
+[data-testid="stSidebarContent"]{
+        background-color: rgba(0,0,0,0.7);
+
+}
+
 [data-testid="stAppViewContainer"] {
-    background-image: linear-gradient(
-        155deg,
-        rgba(12, 13, 20, 0.55) 3%,
-        rgba(2, 3, 3, 0.85) 100%
-    ),
-    url("https://images.unsplash.com/photo-1566073771259-6a8506099945");
+    background-image:
+        linear-gradient(
+            rgba(0,0,0,0.5),
+            rgba(0,0,0,0.9)
+        ),
+        url("https://images.unsplash.com/photo-1566073771259-6a8506099945");
+    background-size: cover;
+    background-attachment: fixed;
+}
+    [data-testid="stSidebarHeader"]{
+    background-image: url(https://media.istockphoto.com/id/1092200002/vector/luxury-hotel-logo-vector-design-on-black-background.jpg?s=612x612&w=0&k=20&c=GiriWYtD7uai5bf6Ac23IVCE2NKpSc5X3CGf6cUq47U=);
     background-size: cover;
     background-repeat: no-repeat;
-    background-attachment: fixed;
-    color: white;
-}
+    height: 150px; 
+    }
 
-/* Titres : hiérarchie claire */
-h1 {
-    color: #E76F51;
+/* TITRES */
+h1, h2, h3, h4, h5 {
+    color: white !important;
     font-weight: 800;
 }
 
-h2 {
-    color: #2A9D8F;
-    font-weight: 700;
-}
-
-h3, h4 {
-    color: white;
-}
-
-/* Texte général */
-p, label {
-    color: #F1FAEE;
+/* TEXTE */
+p, label, span, li {
+    color: #F5F5DC !important;
     font-size: 16px;
-    color: white;
 }
 
-/* Sections / cartes */
+/* CARTES */
 .section {
-    background: rgba(0, 0, 0, 0.55);
-    padding: 25px;
-    border-radius: 16px;
-    margin-bottom: 25px;
-    color: white;
+    background: rgba(0,0,0,0.65);
+    padding: 22px;
+    border-radius: 18px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(255,255,255,0.15);
 }
 
-/* Widgets (radio, checkbox, selectbox) */
+/* TABLE */
+thead tr th {
+    background-color: rgba(0,0,0,0.85) !important;
+    color: white !important;
+}
+tbody tr td {
+    color: white !important;
+}
+
+/* WIDGETS */
 [data-baseweb="radio"] label,
 [data-baseweb="checkbox"] label,
 [data-baseweb="select"] label {
-    color: #F1FAEE !important;
+    color: white !important;
     font-weight: 500;
 }
 
-/* Badge type chambre (optionnel) */
-.badge {
-    padding: 6px 12px;
-    border-radius: 10px;
-    color: white;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 8px;
-}
 </style>
-
 """, unsafe_allow_html=True)
 
-
-st.title("🛏️ Gestion des chambres")
+# =========================
+# TITRE PRINCIPAL
+# =========================
 st.markdown("""
-Cette page permet de **consulter et filtrer les chambres disponibles** de la chaîne hôtelière.
-Chaque chambre est identifiée par un **code unique**, un **étage**, une **superficie**, un **type**
-(simple, double, triple ou suite) et une **liste d’équipements**.
-Les suites disposent en plus de **plusieurs espaces**.
-""")
+<h1>🛏️ Gestion des chambres</h1>
 
-# CONNEXION MYSQL
+<p style="font-size:18px;">
+Consultez les <b>chambres disponibles</b> avec leurs 
+<b>caractéristiques complètes</b> dans un cadre élégant et lisible.
+</p>
+""", unsafe_allow_html=True)
+
+# =========================
+# IMAGE LUXE SIDEBAR
+# =========================
+with st.sidebar:
+    st.markdown("""
+    <div style="
+        background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945');
+        background-size: cover;
+        background-position: center;
+        height: 260px;
+        border-radius: 18px;
+        margin-bottom: 25px;
+        position: relative;
+    ">
+        <div style="
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 15px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 0 0 18px 18px;
+        ">
+            <h3 style="color:white; margin:0;">Luxury Hotel</h3>
+            <p style="color:#F5F5DC; font-size:14px; margin:0;">
+                Comfort • Elegance • Prestige
+            </p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# =========================
+# CONNEXION DB
+# =========================
 conn = st.connection("hotel")
 
-# REQUÊTE SQL
 query = """
 SELECT 
-    c.code_c,
-    c.etage,
-    c.surface,
+    r.CodR AS code_c,
+    r.Floor AS etage,
+    r.SurfaceArea AS surface,
     CASE
-        WHEN c.surface <= 60 THEN 'Simple'
-        WHEN c.surface <= 120 THEN 'Double'
-        WHEN c.surface <= 180 THEN 'Triple'
+        WHEN r.SurfaceArea <= 60 THEN 'Simple'
+        WHEN r.SurfaceArea <= 120 THEN 'Double'
+        WHEN r.SurfaceArea <= 180 THEN 'Triple'
         ELSE 'Suite'
     END AS type_chambre,
-    GROUP_CONCAT(DISTINCT e.equipement SEPARATOR ', ') AS equipements,
-    GROUP_CONCAT(DISTINCT h.espace_dispo SEPARATOR ', ') AS espaces
-FROM CHAMBRE c
-LEFT JOIN CHAMBRE_EQUIPMENT e ON c.code_c = e.code_c
-LEFT JOIN HAS_ESPACE_DISPO h ON c.code_c = h.code_c
-GROUP BY c.code_c, c.etage, c.surface;
+    GROUP_CONCAT(DISTINCT a.AMENITIES_Amenity SEPARATOR ', ') AS equipements,
+    GROUP_CONCAT(DISTINCT s.SPACES_Space SEPARATOR ', ') AS espaces
+FROM ROOM r
+LEFT JOIN HAS_AMENITIES a ON r.CodR = a.ROOM_CodR
+LEFT JOIN HAS_SPACES s ON r.CodR = s.ROOM_CodR
+GROUP BY r.CodR, r.Floor, r.SurfaceArea;
 """
-df = conn.query(query)
 
+@st.cache_data
+def load_data():
+    return conn.query(query)
 
+df = load_data()
 
+# =========================
 # FILTRES
-
+# =========================
 st.subheader("🔍 Filtres des chambres")
 
-with st.expander("Options de filtrage", expanded=True):
+col1, col2, col3 = st.columns(3)
 
-    col1, col2, col3 = st.columns(3)
+with col1:
+    type_filter = st.radio(
+        "Type de chambre",
+        ["Toutes", "Simple", "Double", "Triple", "Suite"]
+    )
 
-    with col1:
-        type_filter = st.radio(
-            "Type de chambre",
-            ["Toutes", "Simple", "Double", "Triple", "Suite"]
-        )
+with col2:
+    surface_min, surface_max = st.slider(
+        "Surface (m²)",
+        int(df.surface.min()),
+        int(df.surface.max()),
+        (30, 160)
+    )
 
-    with col2:
-        equipements = st.multiselect(
-            "Équipements souhaités",
-            ["TV", "Climatisation", "Mini-bar", "Balcon", "Jacuzzi", "Cuisine équipée"]
-        )
+with col3:
+    cuisine = st.checkbox("🍳 Avec cuisine")
 
-    with col3:
-        cuisine = st.checkbox("Avec cuisine")
-
-
+# =========================
 # APPLICATION DES FILTRES
-
+# =========================
 if type_filter != "Toutes":
-    df = df[df["type_chambre"] == type_filter]
+    df = df[df.type_chambre == type_filter]
 
-if equipements:
-    df = df[df["equipements"].str.contains('|'.join(equipements), na=False)]
+df = df[(df.surface >= surface_min) & (df.surface <= surface_max)]
 
 if cuisine:
-    df = df[df["equipements"].str.contains("Cuisine", na=False)]
+    df = df[df.espaces.str.contains("kitchen", na=False)]
 
-if df.empty:
-    st.warning("Aucune chambre ne correspond aux critères sélectionnés.")
-    st.stop()
-
-# TABLEAU DES CHAMBRES
-
+# =========================
+# TABLEAU
+# =========================
 st.subheader("📋 Chambres disponibles")
-
 st.dataframe(
     df[["code_c", "etage", "surface", "type_chambre"]],
     use_container_width=True
 )
 
-# APERÇU VISUEL (MAX 5 CHAMBRES)
+# =========================
+# IMAGES PAR TYPE
+# =========================
+images = {
+    "Simple": "https://images.unsplash.com/photo-1505691938895-1758d7feb511",
+    "Double": "https://images.unsplash.com/photo-1501117716987-c8e1ecb210c9",
+    "Triple": "https://images.unsplash.com/photo-1560066984-138dadb4c035",
+    "Suite": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b"
+}
 
+# =========================
+# APERÇU VISUEL
+# =========================
 st.subheader("🏨 Aperçu des chambres")
 
-for index, row in df.head(5).iterrows():
+for _, row in df.head(5).iterrows():
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        st.markdown(f"### Chambre {row['code_c']}")
-        st.write(f"**Étage :** {row['etage']}")
-        st.write(f"**Surface :** {row['surface']} m²")
-        st.write(f"**Type :** {row['type_chambre']}")
-        equip_list = row["equipements"].split(", ") if row["equipements"] else []
-        for eq in equip_list:
-            st.markdown(f"- ✅ {eq}")
-
-
-        if row["type_chambre"] == "Suite":
-            st.write(f"**Espaces disponibles :** {row['espaces']}")
+        st.markdown(f"""
+        <div class="section">
+            <h3>Chambre {row.code_c} — {row.type_chambre}</h3>
+            <p><b>Étage :</b> {row.etage}</p>
+            <p><b>Surface :</b> {row.surface} m²</p>
+            <p><b>Équipements :</b> {row.equipements or "Aucun"}</p>
+            <p><b>Espaces :</b> {row.espaces or "—"}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col2:
-        if row["type_chambre"] == "Simple":
-            st.image("https://images.unsplash.com/photo-1505691938895-1758d7feb511")
-        elif row["type_chambre"] == "Double":
-            st.image("https://images.unsplash.com/photo-1501117716987-c8e1ecb210c9")
-        elif row["type_chambre"] == "Triple":
-            st.image("https://images.unsplash.com/photo-1560066984-138dadb4c035")
-        else:
-            st.image("https://images.unsplash.com/photo-1582719478250-c89cae4dc85b")
+        st.image(images[row.type_chambre], use_container_width=True)
 
     st.divider()

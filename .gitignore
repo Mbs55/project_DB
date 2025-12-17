@@ -1,0 +1,9 @@
+# PyCharm / IntelliJ
+.idea/
+*.iml
+
+# Environnements virtuels
+.venv/
+
+# Fichiers locaux
+db/
