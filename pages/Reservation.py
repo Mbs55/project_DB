@@ -102,6 +102,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+<<<<<<< HEAD
 st.markdown("Cette page analyse toutes les réservations de l'hôtel .")
 
 conn = st.connection(name="hotel")
@@ -123,10 +124,21 @@ with st.expander(" Chambres Disponibles", expanded=True):
     """
     df1 = conn.query(query1)
     st.dataframe(df1, use_container_width=True)
+=======
+
+
+
+st.markdown("Cette page analyse toutes les réservations de l'hôtel.")
+
+conn = st.connection(name="hotel")
+
+st.subheader(" Les Chambres Disponible: ")
+>>>>>>> e780dac3fc30be49cb459cad4f6664107af65554
 
 with st.expander(" Chambre avec le Coût Journalier Moyen le Plus Élevé par Mois"):
     query9 = """
     SELECT
+<<<<<<< HEAD
         mois,
         CodR,
         Floor,
@@ -150,6 +162,56 @@ with st.expander(" Chambre avec le Coût Journalier Moyen le Plus Élevé par Mo
         GROUP BY mois, R.CodR, R.Floor, R.SurfaceArea, R.Type
     ) t
     WHERE rang = 1
+=======
+    R.CodR AS ROOM_CodR,
+    R.Floor,
+    R.SurfaceArea,
+    R.Type
+    FROM ROOM R
+    WHERE R.CodR NOT IN (
+    SELECT DISTINCT B.ROOM_CodR
+    FROM BOOKING B
+)
+ORDER BY R.CodR;
+
+"""
+df1 = conn.query(query1)
+
+st.dataframe(df1, use_container_width=True)
+st.markdown("---")
+query="""
+SELECT mois, ROOM_CodR, FLOOR,SurfaceArea,Type,prix_journalier AS Prix_Journalier
+FROM (
+    SELECT
+        EXTRACT(MONTH FROM StartDate) AS mois,
+        ROOM_CodR,
+        AVG(Cost / NULLIF(DATEDIFF(EndDate, StartDate), 0)) AS prix_journalier,
+        RANK() OVER (
+            PARTITION BY EXTRACT(MONTH FROM StartDate)
+            ORDER BY AVG(Cost / NULLIF(DATEDIFF(EndDate, StartDate), 0)) DESC
+        ) AS rnk
+    FROM BOOKING
+    GROUP BY mois, ROOM_CodR
+) t,ROOM where ROOM.CodR=t.ROOM_CodR and rnk = 1
+ORDER BY mois;
+"""
+st.subheader(" Chambre avec le Coût Journalier Moyen le Plus Élevé par Mois")
+
+df_top = conn.query(query)
+
+st.dataframe(df_top, use_container_width=True)
+st.markdown("---")
+
+# Prix moyen par mois
+st.subheader("Prix moyen par mois")
+
+query2 = """
+    SELECT 
+        EXTRACT(MONTH FROM StartDate) AS mois,
+        ROUND(AVG(Cost), 2) AS prix_moyen
+    FROM BOOKING
+    GROUP BY mois
+>>>>>>> e780dac3fc30be49cb459cad4f6664107af65554
     ORDER BY mois;
     """
     df_top = conn.query(query9)
@@ -252,6 +314,7 @@ with st.expander(" Chambre la Plus Rentable"):
     with col2:
         st.metric("Revenu total (DH)", df7["revenu_total"][0])
 
+<<<<<<< HEAD
 with st.expander(" Nombre Total de Jours Réservés par Agence"):
     query8 = """
         SELECT 
@@ -267,3 +330,61 @@ with st.expander(" Nombre Total de Jours Réservés par Agence"):
         st.dataframe(df8, use_container_width=True)
     with col2:
         st.bar_chart(df8.set_index("TRAVEL_AGENCY_CodA"))
+=======
+df6 = conn.query(query6)
+st.bar_chart(df6.set_index("mois"))
+st.markdown("---")
+
+# Chambre la plus rentable
+st.subheader(" Chambre la Plus Rentable")
+
+query7 = """
+SELECT
+    ROOM_CodR,
+    SUM(Cost) AS revenu_total
+FROM BOOKING
+GROUP BY ROOM_CodR
+ORDER BY revenu_total DESC
+LIMIT 1;
+"""
+
+df7 = conn.query(query7)
+
+col1, col2 = st.columns(2)
+col1.metric("Chambre la plus rentable", df7["ROOM_CodR"][0])
+col2.metric("Revenu total (DH)", df7["revenu_total"][0])
+
+st.markdown("---")
+
+# Jours réservés par agence
+st.subheader(" Nombre Total de Jours Réservés par Agence")
+
+query8 = """
+SELECT 
+    TRAVEL_AGENCY_CodA,
+    SUM(DATEDIFF(EndDate, StartDate)) AS jours_reserves
+FROM BOOKING
+GROUP BY TRAVEL_AGENCY_CodA
+ORDER BY jours_reserves DESC;
+"""
+
+df8 = conn.query(query8)
+col1, col2 = st.columns(2)
+col1.dataframe(df8, use_container_width=True)
+col2.bar_chart(df8.set_index("TRAVEL_AGENCY_CodA"))
+
+st.markdown("---")
+query10 = """SELECT
+    EXTRACT(MONTH FROM StartDate) AS mois,
+    ROUND(AVG(Cost / DATEDIFF(EndDate, StartDate)), 2) AS cout_journalier_moyen
+FROM BOOKING
+GROUP BY EXTRACT(MONTH FROM StartDate)
+ORDER BY mois;
+"""
+st.subheader("Évolution du Coût Journalier Moyen par Mois")
+
+df_cout = conn.query(query10)
+
+st.line_chart(df_cout.set_index("mois"))
+st.markdown("---")
+>>>>>>> e780dac3fc30be49cb459cad4f6664107af65554
