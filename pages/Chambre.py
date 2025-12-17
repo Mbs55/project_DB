@@ -25,31 +25,28 @@ st.markdown("""
 [data-testid="stSidebar"]{
     background-color: rgba(0,0,0,0.85);
 }
-[data-testid="stSidebar"] * {
-    color: #F5F5DC !important;
+
+[data-testid="stSidebarContent"]{
+        background-color: rgba(0,0,0,0.7);
+
 }
 
-/* LOGO SIDEBAR (EN HAUT À GAUCHE) */
-[data-testid="stSidebarHeader"]{
-    background-image: url("https://media.istockphoto.com/id/1092200002/vector/luxury-hotel-logo-vector-design-on-black-background.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    height:150px;
-    border-radius:16px;
-    margin-bottom:40px;
-}
-
-/* BACKGROUND PRINCIPAL */
 [data-testid="stAppViewContainer"] {
     background-image:
         linear-gradient(
-            rgba(0,0,0,0.80),
-            rgba(0,0,0,0.90)
+            rgba(0,0,0,0.5),
+            rgba(0,0,0,0.9)
         ),
         url("https://images.unsplash.com/photo-1566073771259-6a8506099945");
     background-size: cover;
     background-attachment: fixed;
 }
+    [data-testid="stSidebarHeader"]{
+    background-image: url(https://media.istockphoto.com/id/1092200002/vector/luxury-hotel-logo-vector-design-on-black-background.jpg?s=612x612&w=0&k=20&c=GiriWYtD7uai5bf6Ac23IVCE2NKpSc5X3CGf6cUq47U=);
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 150px; 
+    }
 
 /* TITRES */
 h1, h2, h3, h4, h5 {
