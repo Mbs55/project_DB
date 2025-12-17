@@ -6,7 +6,7 @@ import pandas as pd
 # =========================
 st.set_page_config(
     page_title="Chambres",
-    page_icon="🛏",
+    page_icon="🛏️",
     layout="wide"
 )
 
@@ -102,7 +102,7 @@ st.markdown("""
 <div style="margin-left:220px;
 margin-top:150px;
 ">
-<h1 style="font-family:serif;">🛏 Gestion des chambres</h1>
+<h1 style="font-family:serif;">🛏️ Gestion des chambres</h1>
 <p style="font-size:15px;
 margin-bottom:400px;">
 Consultez les <b>chambres disponibles</b> avec leurs 
@@ -161,85 +161,66 @@ LEFT JOIN HAS_SPACES s ON r.CodR = s.ROOM_CodR
 GROUP BY r.CodR, r.Floor, r.SurfaceArea;
 """
 
-# =========================
-# FILTRES
-# =========================
-st.subheader("🔍 Filtres des chambres")
-
+df = conn.query(query1)
 col1, col2, col3 = st.columns(3)
-
 with col1:
     type_filter = st.radio(
         "Type de chambre",
         ["Toutes", "Simple", "Double", "Triple", "Suite"]
     )
 
-variable =conn.query("""select distinct AMENITIES_Amenity from HAS_AMENITIES; """)
+# multiselect : équipements (balcony, minibar, etc.)
+df_amen = conn.query("SELECT DISTINCT AMENITIES_Amenity FROM HAS_AMENITIES;")
+amenities_list = df_amen["AMENITIES_Amenity"].tolist()
+
 with col2:
-    equipements = st.multiselect(
-        "Equipements souhaites",
-         options=variable.values
+    equipementss = st.multiselect(
+        "Équipements souhaités",
+        options=amenities_list
     )
+
+# checkbox : présence d'une cuisine
 with col3:
     cuisine = st.checkbox("🍳 Avec cuisine")
-st.subheader("📋 Chambres disponibles")
 
+st.subheader("📋 Chambres disponibles")
 st.divider()
 
 
-# =========================
-# APPLICATION DES FILTRES
-# =========================
-""""
-if type_filter == "Toutes" and not cuisine:
-    st.write(conn.query(query))
-elif type_filter == "Toutes" and cuisine:
-    query = ""select CodR,FLOOR,SurfaceArea,Type from ROOM,HAS_SPACES where HAS_SPACES.ROOM_CodR = ROOM.CodR and HAS_SPACES.SPACES_space = "kitchen" """
-st.write(conn.query(query))
-# *********************************************
-if len(equipements)>0 :
-    selected = equipements
+#FR -> EN pour ROOM.Type
+type_map = {
+    "Simple": "single",
+    "Double": "double",
+    "Triple": "triple",
+    "Suite": "suite"
+}
 
-#**********************
-if type_filter == "Simple":
-    type_filter = "single"  # Conversion fr to en
+# filtre type
+if type_filter != "Toutes":
+    room_type = type_map[type_filter]
+    df = df[df["type_chambre"] == room_type]
 
-elif type_filter == "Double":
-    type_filter = "double"
+# filtre équipements (tous ceux choisis doivent apparaître)
+if equipementss:
+    for e in equipementss:
+        # .str.contains(e) pour vérifier la présence de l'équipement dans la chaîne
+        df = df[df["equipements"].fillna("").str.contains(e)]
 
-elif type_filter == "Triple":
-    type_filter = "triple"
-elif type_filter == "Suite":
-    type_filter = "suite"
-"""
-if type_filter :
-    if type_filter != "Toutes":
-        if len(equipements)>0 :
-            conn.query(""select  CodR,FLOOR,SurfaceArea,Type from ROOM,HAS_SPACES where type=type_filter and AMENITIES_Amenity in equipements """)
-        else:
-            conn.query("""select  CodR,FLOOR,SurfaceArea,Type from ROOM where type=type_filter """)
-    else:
-        if len(equipements)>0 :
-            conn.query("""select  CodR,FLOOR,SurfaceArea,Type from ROOM,HAS_SPACES where AMENITIES_Amenity in equipements """)
-        else :
-            conn.query("""select  CodR,FLOOR,SurfaceArea,Type from ROOM  """)
+# filtre cuisine (SPACES_Space = 'kitchen')
+if cuisine:
+    df = df[df["espaces"].fillna("").str.contains("kitchen")]
 
 
-
-
-# TABLEAU
-# =========================
-
+st.dataframe(df[["code_c", "etage", "surface", "type_chambre"]])
 
 # =========================
 # IMAGES PAR TYPE
 # =========================
-images =
-{
-    "single": "https://images.unsplash.com/photo-1505691938895-1758d7feb511";
-    "double": "https://images.unsplash.com/photo-1501117716987-c8e1ecb210c9";
-    "triple": "https://images.unsplash.com/photo-1560066984-138dadb4c035";
-    "suite": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b"
+images = {
+    "single": "https://www.arcotel-acaciasetoile.com/wp-content/uploads/2019/06/chambre-single-acacias-etoile-312-b-1260x969.jpg",
+    "double": "https://www.gurtenpark.ch/media/volgxgue/headerbild_hotel_1920x1080_.jpg?width=1920&v=1dc0de825e9df10",
+    "triple": "https://hotelidouanfacasablanca.com/assets/img/hotelidouanfa-casablanca/chambres/triple/chambre-triple-slider001-min.jpg",
+    "suite": "https://previews.123rf.com/images/drixe/drixe2306/drixe230600012/205818670-modern-luxury-bedroom-interior-design-with-brown-marble-walls-wooden-floor-comfortable-king-size.jpg"
 }
 
 # =========================
